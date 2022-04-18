@@ -23,7 +23,7 @@ public class UsersServer {
 	}
 	
 	public static final int PORT = 8080;
-	public static final String SERVICE = "UsersService";
+	public static final String SERVICE = "users";
 	private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 	
 	public static void main(String[] args) {
@@ -45,7 +45,7 @@ public class UsersServer {
 		
 		Discovery disc = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI);
 		
-		disc.announce(ip, serverURI);
+		disc.announce(SERVICE, serverURI);
 		
 		} catch( Exception e) {
 			Log.severe(e.getMessage());

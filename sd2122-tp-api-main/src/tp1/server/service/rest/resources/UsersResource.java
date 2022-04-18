@@ -50,10 +50,10 @@ public class UsersResource implements RestUsers {
 		Log.info("getUser : user = " + userId + "; pwd = " + password);
 		
 		// Check if user is valid
-		if(userId == null || password == null) {
+		/*if(userId == null || password == null) {
 			Log.info("UserId or passwrod null.");
 			throw new WebApplicationException( Status.BAD_REQUEST );
-		}
+		}*/
 		
 		User user = users.get(userId);
 		
@@ -87,8 +87,18 @@ public class UsersResource implements RestUsers {
 			Log.info("Password is incorrect.");
 			throw new WebApplicationException( Status.FORBIDDEN );
 		}
-		
-		u = user;
+		if(user.getEmail() != null) {
+			u.setEmail(user.getEmail());
+		}
+		if(user.getFullName() != null) {
+			u.setFullName(user.getFullName());
+		}
+		/*if(user.getUserId()!= null) {
+			u.setUserId(user.getUserId());
+		}*/
+		if(user.getPassword() != null) {
+			u.setPassword(user.getPassword());
+		}
 		return u;
 	}
 
@@ -117,7 +127,8 @@ public class UsersResource implements RestUsers {
 		List<User> toReturn = new ArrayList<>();
 		for(String id : users.keySet()) {
 			User u = users.get(id);
-			if(u.getFullName().contains(pattern)) {
+			String userFullName = u.getFullName().toUpperCase();
+			if(userFullName.contains(pattern.toUpperCase())) {
 				toReturn.add(u);
 			}
 		}

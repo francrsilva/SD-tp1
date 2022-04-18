@@ -35,7 +35,7 @@ public class Discovery {
 
 
 	// The pre-aggreed multicast endpoint assigned to perform discovery. 
-	public static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("227.227.227.227", 2277);
+	public static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("226.226.226.226", 2266);
 	public static final int DISCOVERY_PERIOD = 1000;
 	static final int DISCOVERY_TIMEOUT = 5000;
 
