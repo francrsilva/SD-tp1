@@ -29,8 +29,7 @@ public class RestDirectoriesClient extends RestClient implements RestDirectory {
 
 	private FileInfo clt_writeFile(String filename, byte[] data, String userId, String password) {
 		// TODO Auto-generated method stub
-		Response r = target.path(userId)
-				.path(filename)
+		Response r = target.path(userId + "/" + filename)
 				.queryParam(RestUsers.PASSWORD, password).request()
 				.accept(MediaType.APPLICATION_OCTET_STREAM)
 				.post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));

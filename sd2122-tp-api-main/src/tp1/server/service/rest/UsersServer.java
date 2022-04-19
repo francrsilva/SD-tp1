@@ -46,6 +46,7 @@ public class UsersServer {
 		Discovery disc = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI);
 		
 		disc.announce(SERVICE, serverURI);
+		disc.listener();
 		
 		} catch( Exception e) {
 			Log.severe(e.getMessage());

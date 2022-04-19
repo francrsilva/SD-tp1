@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import tp1.server.service.rest.resources.UsersResource;
+import tp1.server.service.rest.resources.DirectoriesResource;
 import tp1.server.service.rest.util.Discovery;
 import util.Debug;
 
@@ -28,7 +28,7 @@ public class DirectoriesServer {
 			Debug.setLogLevel( Level.INFO, Debug.SD2122 );
 
 			ResourceConfig config = new ResourceConfig();
-			config.register(UsersResource.class);
+			config.register(DirectoriesResource.class);
 			//config.register(CustomLoggingFilter.class);
 			//config.register(GenericExceptionMapper.class);
 
@@ -43,6 +43,8 @@ public class DirectoriesServer {
 			Discovery disc = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI);
 
 			disc.announce(SERVICE, serverURI);
+			
+			disc.listener();
 
 		} catch( Exception e) {
 			Log.severe(e.getMessage());

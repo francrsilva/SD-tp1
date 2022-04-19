@@ -1,6 +1,7 @@
 tp1\api\User.class
 tp1\server\service\rest\util\GenericExceptionMapper.class
 tp1\server\service\rest\util\Discovery.class
+tp1\server\service\rest\resources\DirectoriesResource.class
 tp1\clients\service\rest\RestUsersClient$1.class
 tp1\server\service\rest\DirectoriesServer.class
 tp1\server\service\rest\util\CustomLoggingFilter.class
@@ -18,6 +19,7 @@ tp1\clients\service\rest\RestClient.class
 util\Debug.class
 tp1\api\FileInfo.class
 tp1\api\service\util\Users.class
+tp1\clients\service\rest\RestDirectoriesClient.class
 tp1\api\service\soap\DirectoryException.class
 tp1\api\service\util\Result$ErrorCode.class
 tp1\clients\service\rest\GetUserClient.class

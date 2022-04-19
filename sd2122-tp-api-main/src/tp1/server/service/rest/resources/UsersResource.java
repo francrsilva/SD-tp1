@@ -48,7 +48,6 @@ public class UsersResource implements RestUsers {
 	@Override
 	public User getUser(String userId, String password) {
 		Log.info("getUser : user = " + userId + "; pwd = " + password);
-		
 		// Check if user is valid
 		/*if(userId == null || password == null) {
 			Log.info("UserId or passwrod null.");
@@ -60,7 +59,7 @@ public class UsersResource implements RestUsers {
 		// Check if user exists 
 		if( user == null ) {
 			Log.info("User does not exist.");
-			throw new WebApplicationException( Status.NOT_FOUND );
+			throw new WebApplicationException( Status.NOT_FOUND);
 		}
 		
 		//Check if the password is correct

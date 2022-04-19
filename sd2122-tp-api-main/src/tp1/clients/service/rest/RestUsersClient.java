@@ -16,7 +16,7 @@ public class RestUsersClient extends RestClient implements RestUsers {
 
 	final WebTarget target;
 	
-	RestUsersClient( URI serverURI ) {
+	public RestUsersClient( URI serverURI ) {
 		super( serverURI );
 		target = client.target( serverURI ).path( RestUsers.PATH );
 	}
