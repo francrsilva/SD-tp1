@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.MediaType;
 public interface RestFiles {
 
 	static final String PATH="/files";
+	public static final String TOKEN = "token";
 
 	/**
 	 * Write a file. If the file exists, overwrites the contents.

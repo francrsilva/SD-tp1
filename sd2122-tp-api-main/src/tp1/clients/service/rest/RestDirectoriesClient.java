@@ -9,7 +9,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import tp1.api.FileInfo;
-import tp1.api.User;
 import tp1.api.service.rest.RestDirectory;
 import tp1.api.service.rest.RestUsers;
 
@@ -54,7 +53,6 @@ public class RestDirectoriesClient extends RestClient implements RestDirectory {
 
 	private void clt_deleteFile(String filename, String userId, String password) {
 		// TODO Auto-generated method stub
-		//return;
 	}
 
 	@Override

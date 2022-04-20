@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,60 +20,67 @@ import tp1.api.FileInfo;
 import tp1.api.User;
 import tp1.api.service.rest.RestDirectory;
 import tp1.clients.service.rest.RestUsersClient;
+import tp1.server.service.rest.DirectoriesServer;
 import tp1.server.service.rest.UsersServer;
 
 @Singleton
 public class DirectoriesResource implements RestDirectory {
 
 	private final Map<String,List<FileInfo>> files = new HashMap<>(); 
-	
+
 	private static Logger Log = Logger.getLogger(DirectoriesResource.class.getName());
-	
-	
+
+
 	public DirectoriesResource() {
 	}
-	
-	private URI getURI(){
-		String ip = "";
-		try {
-			ip = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		URI uri = URI.create(String.format("http://%s:%s/rest", ip, 8080));
-		return uri;
-	}
+
+
 	@Override
 	public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
 		// TODO Auto-generated method stub
-		User user = new RestUsersClient(getURI()).getUser(userId, password);
+		User user = null;
+		for(URI uri: DirectoriesServer.foundURI("users")) {
+			user = new RestUsersClient(uri).getUser(userId, password);
+			if(user != null) {
+				break;
+			}
+		}
 		if(userId == null || password == null) {
 			Log.info("Null exception.");
 			throw new WebApplicationException( Status.BAD_REQUEST );
 		}
-			
+
 		if(user == null) {
 			Log.info("User does not exist.");
 			throw new WebApplicationException( Status.NOT_FOUND );
 		}
-		if(!user.getPassword().equals(password)) {
-			Log.info("Wrong Password.");
-			throw new WebApplicationException( Status.FORBIDDEN + " " + getURI());
+		else {
+			if(!user.getPassword().equals(password)) {
+				Log.info("Wrong Password.");
+				throw new WebApplicationException( Status.FORBIDDEN);
+			}
+			List<FileInfo> list = files.get(userId);
+			if(list == null) {
+				list = new ArrayList<FileInfo>();
+			}
+			Set<String> canRead = new HashSet<>();
+			canRead.add(userId);
+			FileInfo f = new FileInfo(userId, filename, userId+"/"+filename, canRead);
+			list.add(f);
+			return f;
 		}
-		List<FileInfo> list = files.get(userId);
-		if(list == null) {
-			list = new ArrayList<FileInfo>();
-		}
-		FileInfo f = new FileInfo(userId, filename, null, null);
-		list.add(f);
-		return f;
+
 	}
 
 	@Override
 	public void deleteFile(String filename, String userId, String password) {
-		// TODO Auto-generated method stub
-
+		for(FileInfo f : files.get(userId)) {
+			if(f.getFilename().equals(filename)) {
+				files.get(userId).remove(f);
+				return;
+			}
+		}
+		
 	}
 
 	@Override

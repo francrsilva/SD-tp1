@@ -22,7 +22,7 @@ public class DirectoriesServer {
 	public static final int PORT = 8080;
 	public static final String SERVICE = "directory";
 	private static final String SERVER_URI_FMT = "http://%s:%s/rest";
-
+	private static Discovery disc;
 	public static void main(String[] args) {
 		try {
 			Debug.setLogLevel( Level.INFO, Debug.SD2122 );
@@ -40,7 +40,7 @@ public class DirectoriesServer {
 
 			//More code can be executed here...
 
-			Discovery disc = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI);
+			disc = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI);
 
 			disc.announce(SERVICE, serverURI);
 			
@@ -49,5 +49,9 @@ public class DirectoriesServer {
 		} catch( Exception e) {
 			Log.severe(e.getMessage());
 		}
+	}
+	
+	public static URI[] foundURI(String serviceName) {
+		return disc.knownUrisOf(serviceName);
 	}
 }
