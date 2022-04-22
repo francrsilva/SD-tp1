@@ -8,12 +8,12 @@ import java.util.logging.Logger;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import tp1.server.service.rest.resources.UsersResource;
+import tp1.server.service.rest.resources.FilesResource;
 import tp1.server.service.rest.util.Discovery;
 import util.Debug;
 
 public class FilesServer {
-	private static Logger Log = Logger.getLogger(UsersServer.class.getName());
+	private static Logger Log = Logger.getLogger(FilesServer.class.getName());
 
 	static {
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -28,7 +28,7 @@ public class FilesServer {
 			Debug.setLogLevel( Level.INFO, Debug.SD2122 );
 
 			ResourceConfig config = new ResourceConfig();
-			config.register(UsersResource.class);
+			config.register(FilesResource.class);
 			//config.register(CustomLoggingFilter.class);
 			//config.register(GenericExceptionMapper.class);
 

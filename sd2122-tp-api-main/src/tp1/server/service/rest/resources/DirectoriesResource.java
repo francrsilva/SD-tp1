@@ -2,7 +2,6 @@ package tp1.server.service.rest.resources;
 
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,15 +12,14 @@ import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import tp1.api.FileInfo;
 import tp1.api.User;
 import tp1.api.service.rest.RestDirectory;
 import tp1.clients.service.rest.RestUsersClient;
+import tp1.clients.service.rest.RestFilesClient;
 import tp1.server.service.rest.DirectoriesServer;
-import tp1.server.service.rest.UsersServer;
 
 @Singleton
 public class DirectoriesResource implements RestDirectory {
@@ -67,6 +65,10 @@ public class DirectoriesResource implements RestDirectory {
 			canRead.add(userId);
 			FileInfo f = new FileInfo(userId, filename, userId+"/"+filename, canRead);
 			list.add(f);
+			for(URI uri : DirectoriesServer.foundURI("files")) {
+				new RestFilesClient(uri).writeFile(userId+":"+filename,data,"");
+				break;
+			}
 			return f;
 		}
 
@@ -97,8 +99,49 @@ public class DirectoriesResource implements RestDirectory {
 
 	@Override
 	public byte[] getFile(String filename, String userId, String accUserId, String password) {
-		// TODO Auto-generated method stub
-		return null;
+		User user = null;
+		for(URI uri: DirectoriesServer.foundURI("users")) {
+			user = new RestUsersClient(uri).getUser(accUserId, password);
+			if(user != null) {
+				break;
+			}
+		}
+		if(userId == null || password == null || accUserId == null || filename == null) {
+			Log.info("Null exception.");
+			throw new WebApplicationException( Status.BAD_REQUEST );
+		}
+
+		if(user == null) {
+			Log.info("User does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND );
+		}
+		if(!user.getPassword().equals(password)) {
+			Log.info("Wrong Password.");
+			throw new WebApplicationException( Status.FORBIDDEN);
+		}
+		/*URI filesUri = null;
+		for(URI uri: DirectoriesServer.foundURI("files")) {
+			filesUri = uri;
+		}*/
+		String uri = "http://172.18.0.5:8080/rest/files/" + userId + ":" + filename + "/?token=";
+		Log.info(uri);
+		System.out.println(uri);
+		throw new WebApplicationException(
+				Response.temporaryRedirect(URI.create(uri)).build());
+		/*byte[] data = null;
+		for(URI uri : DirectoriesServer.foundURI("files")) {
+			data = new RestFilesClient(uri).getFile(userId+":"+filename, "");
+			if(data != null) {
+				break;
+			}
+		}
+		if(data == null) {
+			Log.info("File does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND );
+		}
+		else {
+			return data;
+		}*/
 	}
 
 	@Override

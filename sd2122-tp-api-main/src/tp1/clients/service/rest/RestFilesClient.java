@@ -7,17 +7,14 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import tp1.api.File;
 import tp1.api.service.rest.RestFiles;
-import tp1.api.service.rest.RestUsers;
-
 public class RestFilesClient extends RestClient implements RestFiles {
 
 	final WebTarget target;
 
-	RestFilesClient(URI serverURI) {
+	public RestFilesClient(URI serverURI) {
 		super(serverURI);
-		target = client.target( serverURI ).path( RestUsers.PATH );
+		target = client.target( serverURI ).path( RestFiles.PATH );
 	}
 
 	@Override
@@ -27,29 +24,65 @@ public class RestFilesClient extends RestClient implements RestFiles {
 		});
 	}
 
-	private File clt_writeFile(String fileId, byte[] data, String token) {
+	private String clt_writeFile(String fileId, byte[] data, String token) {
 		Response r = target.path(fileId)
 				.queryParam(RestFiles.TOKEN, token)
 				.request()
-				.accept(MediaType.APPLICATION_OCTET_STREAM)
+				.accept(MediaType.APPLICATION_JSON)
 				.post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
 
-		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() )
-			return r.readEntity(File.class);
+		if( r.getStatus() == Status.NO_CONTENT.getStatusCode())
+			return "";
 		else 
-			System.out.println("Error, HTTP error status: " + r.getStatus() );
-		
+			System.out.println("Error, HTTP error status: " + r.getStatus());
+
 		return null;
 	}
 	@Override
 	public void deleteFile(String fileId, String token) {
-		// TODO Auto-generated method stub
+		super.reTry( () -> {
+			return clt_deleteFile(fileId,token);
+		});
 
+	}
+
+	private String clt_deleteFile(String fileId, String token) {
+		Response r = target.path(fileId)
+				.queryParam(RestFiles.TOKEN, token)
+				.request()
+				.delete();
+
+		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() )
+			return "";
+		else 
+			System.out.println("Error, HTTP error status: " + r.getStatus() );
+
+		return null;
 	}
 
 	@Override
 	public byte[] getFile(String fileId, String token) {
-		// TODO Auto-generated method stub
+		return super.reTry( () -> {
+			return clt_getFile(fileId,token);
+		});
+	}
+
+	private byte[] clt_getFile(String fileId, String token) {
+		Response r = target.path(fileId)
+				.queryParam(RestFiles.TOKEN, token)
+				.request()
+				.accept(MediaType.APPLICATION_OCTET_STREAM)
+				.get();
+
+		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() ) {
+			System.out.println("Success:");
+			byte[] data = r.readEntity(byte[].class);
+			System.out.println( "Data " + data);
+			return data;
+		}
+		else 
+			System.out.println("Error, HTTP error status: " + r.getStatus() + " " + fileId);
+
 		return null;
 	}
 

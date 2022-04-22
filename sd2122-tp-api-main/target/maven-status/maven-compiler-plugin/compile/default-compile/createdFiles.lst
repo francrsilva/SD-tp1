@@ -7,8 +7,10 @@ tp1\server\service\rest\DirectoriesServer.class
 tp1\server\service\rest\util\CustomLoggingFilter.class
 tp1\server\service\rest\FilesServer.class
 tp1\api\service\util\Directory.class
+tp1\server\service\rest\resources\FilesResource.class
 tp1\server\service\rest\resources\UsersResource.class
 tp1\api\service\rest\RestUsers.class
+tp1\api\File.class
 tp1\api\service\util\ErrorResult.class
 tp1\api\service\soap\SoapUsers.class
 tp1\api\service\util\Result.class
@@ -30,5 +32,6 @@ tp1\api\service\rest\RestFiles.class
 tp1\api\service\soap\FilesException.class
 tp1\clients\service\rest\CreateUserClient.class
 tp1\clients\service\rest\RestUsersClient.class
+tp1\clients\service\rest\RestFilesClient.class
 tp1\api\service\util\Files.class
 tp1\api\service\soap\SoapFiles.class

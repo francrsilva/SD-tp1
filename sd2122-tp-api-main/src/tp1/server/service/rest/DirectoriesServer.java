@@ -13,7 +13,7 @@ import tp1.server.service.rest.util.Discovery;
 import util.Debug;
 
 public class DirectoriesServer {
-	private static Logger Log = Logger.getLogger(UsersServer.class.getName());
+	private static Logger Log = Logger.getLogger(DirectoriesServer.class.getName());
 
 	static {
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -23,6 +23,7 @@ public class DirectoriesServer {
 	public static final String SERVICE = "directory";
 	private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 	private static Discovery disc;
+	public static String serverURI;
 	public static void main(String[] args) {
 		try {
 			Debug.setLogLevel( Level.INFO, Debug.SD2122 );
@@ -33,7 +34,7 @@ public class DirectoriesServer {
 			//config.register(GenericExceptionMapper.class);
 
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
+			serverURI = String.format(SERVER_URI_FMT, ip, PORT);
 			JdkHttpServerFactory.createHttpServer( URI.create(serverURI), config);
 
 			Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
