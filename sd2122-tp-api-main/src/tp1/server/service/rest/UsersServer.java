@@ -10,8 +10,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import tp1.server.service.rest.util.Discovery;
 import tp1.server.service.rest.resources.UsersResource;
-import tp1.server.service.rest.util.CustomLoggingFilter;
-import tp1.server.service.rest.util.GenericExceptionMapper;
 import util.Debug;
 
 public class UsersServer {

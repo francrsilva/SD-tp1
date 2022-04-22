@@ -92,9 +92,6 @@ public class UsersResource implements RestUsers {
 		if(user.getFullName() != null) {
 			u.setFullName(user.getFullName());
 		}
-		/*if(user.getUserId()!= null) {
-			u.setUserId(user.getUserId());
-		}*/
 		if(user.getPassword() != null) {
 			u.setPassword(user.getPassword());
 		}
@@ -132,6 +129,16 @@ public class UsersResource implements RestUsers {
 			}
 		}
 		return toReturn;
+	}
+
+	@Override
+	public User getUserWithoutPassword(String userId) {
+		User u = users.get(userId);
+		if(u == null) {
+			Log.info("User does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND );
+		}
+		return u;
 	}
 
 }

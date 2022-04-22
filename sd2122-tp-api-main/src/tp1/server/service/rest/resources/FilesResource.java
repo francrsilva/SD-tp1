@@ -58,7 +58,7 @@ public class FilesResource implements RestFiles {
 		Log.info("Getting file: " + fileId);
 		if(token == null) {
 			Log.info("Invalid token.");
-			throw new WebApplicationException( Status.FORBIDDEN );
+			throw new WebApplicationException( Status.FORBIDDEN + fileId + token );
 		}
 		if(fileId == null || token == null) {
 			Log.info("All null.");

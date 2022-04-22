@@ -96,4 +96,9 @@ public interface RestUsers {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	List<User> searchUsers(@QueryParam("query") String pattern);
+	
+	@GET
+	@Path("/noPass/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	User getUserWithoutPassword(@PathParam("userId") String userId);
 }

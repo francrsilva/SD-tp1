@@ -123,4 +123,24 @@ public class RestUsersClient extends RestClient implements RestUsers {
 			System.out.println("Error, HTTP error status: " + r.getStatus() );
 		return null;
 	}
+
+	@Override
+	public User getUserWithoutPassword(String userId) {
+		return super.reTry(()->clt_getUserWithoutPassword(userId));
+	}
+
+	private User clt_getUserWithoutPassword(String userId) {
+		Response r = target.path( "/noPass/"+userId ).request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get();
+
+		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() ) {
+			System.out.println("Success:");
+			User u = r.readEntity(User.class);
+			System.out.println( "User : " + u);
+			return u;
+		} else
+			System.out.println("Error, HTTP error status: " + r.getStatus() );
+		return null;
+	}
 }
