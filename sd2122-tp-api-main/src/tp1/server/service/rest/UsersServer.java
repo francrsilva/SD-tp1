@@ -8,7 +8,9 @@ import java.util.logging.Logger;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import tp1.server.service.rest.util.CustomLoggingFilter;
 import tp1.server.service.rest.util.Discovery;
+import tp1.server.service.rest.util.GenericExceptionMapper;
 import tp1.server.service.rest.resources.UsersResource;
 import util.Debug;
 
@@ -30,8 +32,8 @@ public class UsersServer {
 
 			ResourceConfig config = new ResourceConfig();
 			config.register(UsersResource.class);
-			//config.register(CustomLoggingFilter.class);
-			//config.register(GenericExceptionMapper.class);
+			config.register(CustomLoggingFilter.class);
+			config.register(GenericExceptionMapper.class);
 
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			String serverURI = String.format(SERVER_URI_FMT, ip, PORT);

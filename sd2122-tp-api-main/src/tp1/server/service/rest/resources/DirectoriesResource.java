@@ -69,14 +69,12 @@ public class DirectoriesResource implements RestDirectory {
 		Set<String> canRead = new HashSet<>();
 		//canRead.add(userId);
 		URI fileURI = null;
-		int i = 0;
 		for(URI uri : DirectoriesServer.foundURI("files")) {
-			if(i == 1) {
+			
 				new RestFilesClient(uri).writeFile(userId+":"+filename,data,"");
 				fileURI = uri;
 				break;
-			}
-			i++;
+			
 			
 		}
 		FileInfo f = new FileInfo(userId, filename,fileURI.toString() + "/files/" + userId+":"+filename, canRead);
@@ -241,15 +239,9 @@ public class DirectoriesResource implements RestDirectory {
 			}
 		}
 		if(user == null) {
-			if(files.get(userId) != null) {
-				files.remove(userId);
-			}
 			throw new WebApplicationException( Status.NOT_FOUND);
 		}
 		if(accUser == null) {
-			if(files.get(accUserId) != null) {
-				files.remove(accUserId);
-			}
 			Log.info("User does not exist or has invalid password.");
 			for(URI uri: DirectoriesServer.foundURI("users")) {
 				accUser = new RestUsersClient(uri).getUserWithoutPassword(accUserId);
