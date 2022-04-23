@@ -145,6 +145,9 @@ public interface RestDirectory {
 	List<FileInfo> lsFile(@PathParam("userId") String userId, 
 			@QueryParam("password") String password);
 
+	@DELETE
+	@Path("/deleteAll/{userId}")
+	void deleteAllUserFiles(@PathParam("userId")String  userId);
 
 
 }

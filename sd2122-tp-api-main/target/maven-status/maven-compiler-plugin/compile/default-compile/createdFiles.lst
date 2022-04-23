@@ -27,6 +27,7 @@ tp1\api\service\util\Result$ErrorCode.class
 tp1\clients\service\rest\GetUserClient.class
 tp1\api\service\rest\RestDirectory.class
 tp1\api\service\soap\UsersException.class
+tp1\clients\service\rest\RestDirectoriesClient$1.class
 tp1\clients\service\rest\SearchUsersClient.class
 tp1\api\service\rest\RestFiles.class
 tp1\api\service\soap\FilesException.class

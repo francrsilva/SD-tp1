@@ -67,12 +67,17 @@ public class DirectoriesResource implements RestDirectory {
 			list = new ArrayList<FileInfo>();
 		}
 		Set<String> canRead = new HashSet<>();
-		canRead.add(userId);
+		//canRead.add(userId);
 		URI fileURI = null;
+		int i = 0;
 		for(URI uri : DirectoriesServer.foundURI("files")) {
-			new RestFilesClient(uri).writeFile(userId+":"+filename,data,"");
-			fileURI = uri;
-			break;
+			if(i == 1) {
+				new RestFilesClient(uri).writeFile(userId+":"+filename,data,"");
+				fileURI = uri;
+				break;
+			}
+			i++;
+			
 		}
 		FileInfo f = new FileInfo(userId, filename,fileURI.toString() + "/files/" + userId+":"+filename, canRead);
 		list.add(f);
@@ -84,50 +89,177 @@ public class DirectoriesResource implements RestDirectory {
 
 	@Override
 	public void deleteFile(String filename, String userId, String password) {
-		for(FileInfo f : files.get(userId)) {
+		User user = null;
+		for(URI uri : DirectoriesServer.foundURI("users")) {
+			user = new RestUsersClient(uri).getUserWithoutPassword(userId);
+		}
+		if(user == null) {
+			Log.info("User does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		List<FileInfo> fList = files.get(userId);
+		if(fList == null) {
+			Log.info("File does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		FileInfo fileInfo = null;
+		for(FileInfo f : fList) {
 			if(f.getFilename().equals(filename)) {
-				files.get(userId).remove(f);
-				return;
+				fileInfo = f;
 			}
 		}
+		if(fileInfo == null) {
+			Log.info("File does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		if(!user.getPassword().equals(password)) {
+			Log.info("Wrong Password.");
+			throw new WebApplicationException( Status.FORBIDDEN);
+		}
+		for(URI uri : DirectoriesServer.foundURI("files")) {
+			RestFilesClient rfc = new RestFilesClient(uri);
+			byte[] data = rfc.getFile(userId+":"+filename, "");
+			if(data != null) {
+				files.get(userId).remove(fileInfo);
+				rfc.deleteFile(userId+":"+filename,"");
+				throw new WebApplicationException(Status.NO_CONTENT);
+			}
+		}
+		throw new WebApplicationException(Status.BAD_REQUEST);
 
 	}
 
 	@Override
 	public void shareFile(String filename, String userId, String userIdShare, String password) {
-		// TODO Auto-generated method stub
+		User user1 = null;
+		User user2 = null;
+		for(URI uri : DirectoriesServer.foundURI("users")) {
+			if(user1 == null) {
+				user1 = new RestUsersClient(uri).getUserWithoutPassword(userId);
+			}
+			if(user2 == null) {
+				user2 = new RestUsersClient(uri).getUserWithoutPassword(userIdShare);
+			}
+		}
+		if(user1 == null || user2 == null) {
+			Log.info("User does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+
+		List<FileInfo> fList = files.get(userId);
+		if(fList == null) {
+			Log.info("File does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		FileInfo fileInfo = null;
+		for(FileInfo f : fList) {
+			if(f.getFilename().equals(filename)) {
+				fileInfo = f;
+			}
+		}
+		if(fileInfo == null) {
+			Log.info("File does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		if(!user1.getPassword().equals(password)) {
+			Log.info("Wrong Password.");
+			throw new WebApplicationException( Status.FORBIDDEN);
+		}
+		Set<String> newSet = fileInfo.getSharedWith();
+		newSet.add(userIdShare);
+		fileInfo.setSharedWith(newSet);
 
 	}
 
 	@Override
 	public void unshareFile(String filename, String userId, String userIdShare, String password) {
-		// TODO Auto-generated method stub
+		User user1 = null;
+		User user2 = null;
+		for(URI uri : DirectoriesServer.foundURI("users")) {
+			if(user1 == null) {
+				user1 = new RestUsersClient(uri).getUserWithoutPassword(userId);
+			}
+			if(user2 == null) {
+				user2 = new RestUsersClient(uri).getUserWithoutPassword(userIdShare);
+			}
+		}
+		if(user1 == null || user2 == null) {
+			Log.info("User does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
 
+		List<FileInfo> fList = files.get(userId);
+		if(fList == null) {
+			Log.info("File does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		FileInfo fileInfo = null;
+		for(FileInfo f : fList) {
+			if(f.getFilename().equals(filename)) {
+				fileInfo = f;
+			}
+		}
+		if(fileInfo == null) {
+			Log.info("File does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		if(!user1.getPassword().equals(password)) {
+			Log.info("Wrong Password.");
+			throw new WebApplicationException( Status.FORBIDDEN);
+		}
+		Set<String> newSet = fileInfo.getSharedWith();
+		boolean canRemove = false;
+		for(String s : newSet) {
+			if(s.equals(userIdShare)) {
+				canRemove = true;
+				//newSet.remove(s);
+				//fileInfo.setSharedWith(newSet);
+			}
+		}
+		if(canRemove) {
+			newSet.remove(userIdShare);
+			fileInfo.setSharedWith(newSet);
+			Log.info("Success.");
+			throw new WebApplicationException( Status.NO_CONTENT);
+		}
+		else {
+			Log.info("Bad Request.");
+			throw new WebApplicationException( Status.BAD_REQUEST);
+		}
 	}
 
 	@Override
 	public byte[] getFile(String filename, String userId, String accUserId, String password) {
+		User accUser = null;
 		User user = null;
 		for(URI uri: DirectoriesServer.foundURI("users")) {
-			user = new RestUsersClient(uri).getUser(accUserId, password);
-			if(user != null) {
+			RestUsersClient ruc = new RestUsersClient(uri);
+			accUser = ruc.getUser(accUserId, password);
+			user = ruc.getUserWithoutPassword(userId);
+			if(accUser != null && user != null) {
 				break;
 			}
 		}
-
-
 		if(user == null) {
+			if(files.get(userId) != null) {
+				files.remove(userId);
+			}
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		if(accUser == null) {
+			if(files.get(accUserId) != null) {
+				files.remove(accUserId);
+			}
 			Log.info("User does not exist or has invalid password.");
 			for(URI uri: DirectoriesServer.foundURI("users")) {
-				user = new RestUsersClient(uri).getUserWithoutPassword(accUserId);
-				if(user != null) {
+				accUser = new RestUsersClient(uri).getUserWithoutPassword(accUserId);
+				if(accUser != null) {
 					break;
 				}
 			}
-			if(user == null) throw new WebApplicationException( Status.NOT_FOUND);
+			if(accUser == null) throw new WebApplicationException( Status.NOT_FOUND);
 		}
-		
-		if(!user.getPassword().equals(password)) {
+		if(!accUser.getPassword().equals(password)) {
 			Log.info("Wrong Password.");
 			throw new WebApplicationException( Status.FORBIDDEN);
 		}
@@ -140,18 +272,61 @@ public class DirectoriesResource implements RestDirectory {
 		for(FileInfo f: infos) {
 			if(f.getFilename().equals(filename)) {
 				fileURL = f.getFileURL();
+				if(!userId.equals(accUserId) && !f.getSharedWith().contains(accUserId)) {
+					Log.info("Cannot Access File.");
+					throw new WebApplicationException( Status.FORBIDDEN);
+				}
 				break;
 			}
 		}
 		throw new WebApplicationException( 
 				Response.temporaryRedirect(URI.create(fileURL +  "?token=")).build());
-
 	}
 
 	@Override
 	public List<FileInfo> lsFile(String userId, String password) {
-		// TODO Auto-generated method stub
-		return null;
+		User user = null;
+		for(URI uri : DirectoriesServer.foundURI("users")) {
+			user = new RestUsersClient(uri).getUserWithoutPassword(userId);
+		}
+		if(user == null) {
+			Log.info("User does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND);
+		}
+		if(!user.getPassword().equals(password)) {
+			Log.info("Wrong Password.");
+			throw new WebApplicationException( Status.FORBIDDEN);
+		}
+		List<FileInfo> toReturn = new ArrayList<>();
+		Set<String> users = files.keySet();
+		for(String u : users) {
+			List<FileInfo> userFiles = files.get(u);
+			for(FileInfo f : userFiles) {
+				Set<String> canReadFile = f.getSharedWith();
+				if(canReadFile.contains(userId) || userId.equals(u)) {
+					toReturn.add(f);
+				}
+			}
+		}
+		return toReturn;
+	}
+
+
+	@Override
+	public void deleteAllUserFiles(String userId) {
+		List<FileInfo> list = files.get(userId);
+		if(list == null) {
+			throw new WebApplicationException( Status.NO_CONTENT);
+		}
+		for(URI uri: DirectoriesServer.foundURI("files")) {
+			for(FileInfo fInfo : list) {
+				RestFilesClient rfc = new RestFilesClient(uri);
+				rfc.deleteFile(userId + ":" + fInfo.getFilename(), "");
+			}
+		}
+		files.remove(userId);
+		throw new WebApplicationException( Status.NO_CONTENT);
+
 	}
 
 }

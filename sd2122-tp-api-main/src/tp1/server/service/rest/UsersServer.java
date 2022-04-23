@@ -23,7 +23,7 @@ public class UsersServer {
 	public static final int PORT = 8080;
 	public static final String SERVICE = "users";
 	private static final String SERVER_URI_FMT = "http://%s:%s/rest";
-
+	private static Discovery disc;
 	public static void main(String[] args) {
 		try {
 			Debug.setLogLevel( Level.INFO, Debug.SD2122 );
@@ -41,7 +41,7 @@ public class UsersServer {
 
 			//More code can be executed here...
 
-			Discovery disc = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI);
+			disc = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI);
 
 			disc.announce(SERVICE, serverURI);
 			disc.listener();
@@ -50,4 +50,7 @@ public class UsersServer {
 			Log.severe(e.getMessage());
 		}
 	}	
+	public static URI[] foundURI(String serviceName) {
+		return disc.knownUrisOf(serviceName);
+	}
 }

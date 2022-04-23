@@ -52,7 +52,7 @@ public class RestFilesClient extends RestClient implements RestFiles {
 				.request()
 				.delete();
 
-		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() )
+		if( r.getStatus() == Status.NO_CONTENT.getStatusCode() )
 			return "";
 		else 
 			System.out.println("Error, HTTP error status: " + r.getStatus() );
